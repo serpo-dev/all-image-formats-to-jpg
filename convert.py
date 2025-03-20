@@ -3,13 +3,19 @@ from PIL import Image, ImageOps
 import time
 import pillow_heif
 
+
+
+FIX_ORIENTATION = True
+
+
+
 input_folder = 'input'
 output_folder = 'output'
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
-supported_formats = ['JPEG', 'JPG', 'PNG', 'GIF', 'TIFF', 'BMP', 'PDF', 'PCX', 'TGA', 'EPS', 'PSD', 'ICO', 'PPM', 'PBM', 'PGM', 'XCF', 'APNG', 'AVIF', 'HDR', 'JFIF', 'HEIC']
+supported_formats = ['PNG', 'GIF', 'TIFF', 'BMP', 'ICO', 'PPM', 'PBM', 'PGM', 'APNG', 'JPEG', 'JFIF', 'HEIC']
 files = [f for f in os.listdir(input_folder) if any(f.upper().endswith(fmt) for fmt in supported_formats)]
 total_files = len(files)
 start_time = time.time()
@@ -44,7 +50,8 @@ for i, file in enumerate(files):
             img = Image.frombytes(heif_file.mode, heif_file.size, heif_file.data, "raw")
         else:
             with Image.open(file_path) as img:
-                img = correct_orientation(img)
+                if FIX_ORIENTATION:
+                    img = correct_orientation(img)
                 img = img.convert('RGB')
             
         img.save(output_path, 'JPEG')
